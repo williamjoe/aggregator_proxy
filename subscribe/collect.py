@@ -252,6 +252,30 @@ def aggregate(args: argparse.Namespace) -> None:
         if sub:
             subscriptions.add(sub)
 
+    # 第一步：统计每个名称的出现次数
+    name_count = {}
+    for node in nodes:
+        name = node['name']
+        if name in name_count:
+            name_count[name] += 1
+        else:
+            name_count[name] = 1
+
+    # 第二步：遍历nodes，为重复的name添加随机数，从第二个开始
+    seen = {}
+    for node in nodes:
+        name = node['name']
+        if name_count[name] > 1:  # 如果这个name是重复的
+            if name in seen:
+                seen[name] += 1
+                if seen[name] > 1:  # 从第二个开始添加随机数
+                    random_number = random.randint(10, 99)
+                    node['name'] += str(random_number)
+            else:
+                seen[name] = 1
+        else:
+            seen[name] = 1  # 对于不重复的name也记录，防止后续重复
+
     data = {"proxies": nodes}
     urls = list(subscriptions)
 
