@@ -29,25 +29,6 @@ PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 DATA_BASE = os.path.join(PATH, "data")
 
-def load_yaml(file_path):
-    with open(file_path, 'r', encoding='utf-8') as file:
-        return yaml.safe_load(file)
-
-def save_yaml(data, file_path):
-    with open(file_path, 'w', encoding='utf-8') as file:
-        yaml.safe_dump(data, file, allow_unicode=True)
-
-def deduplicate_proxies(file_path):
-    data = load_yaml(file_path)
-    unique_proxies = []
-    seen_names = set()
-    for item in data:
-        if item['name'] not in seen_names:
-            unique_proxies.append(item)
-            seen_names.add(item['name'])
-    save_yaml(unique_proxies, file_path)
-
-
 def assign(
     bin_name: str,
     domains_file: str = "",
@@ -335,8 +316,7 @@ def aggregate(args: argparse.Namespace) -> None:
 
     # 保存实际可使用的网站列表
     utils.write_file(filename=os.path.join(DATA_BASE, "valid-domains.txt"), lines=list(set(domains)))
-    #新增去重功能
-    deduplicate_proxies(proxies_file)
+
     # 如有必要，上传至 Gist
     if gist_id and access_token:
         files, push_conf = {}, {"gistid": gist_id, "filename": default_filename}
